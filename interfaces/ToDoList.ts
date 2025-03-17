@@ -1,5 +1,8 @@
-interface IToDoItem {
+export default interface IToDoItem {
+  id: number;
   todo: string;
-  time: string;
   completed: boolean;
-};
+  date: string;
+  priority: string;
+  status: string;
+}

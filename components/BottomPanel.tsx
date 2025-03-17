@@ -35,6 +35,6 @@ const styles = StyleSheet.create({
     height: 20,
   },
   spacingBetween: {
-    marginLeft: 50, 
+    marginLeft: 80, 
   },
 });

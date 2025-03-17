@@ -1,17 +1,22 @@
+import IToDoItem from "@/interfaces/ToDoList";
 import { View, Text, StyleSheet, Image } from "react-native";
+import { priorityColors } from "../constants";
 
-export const TodoItem = ({ todo, time, completed }: IToDoItem) => {
+export const TodoItem = ({ todo, date, completed, priority }: IToDoItem) => {
   const icon = completed ? require("../assets/images/done.png") : null;
+    
+  const priorityColor = priorityColors[priority];
 
   return (
     <View style={[styles.container, styles.item, completed && styles.completed]}>
       <View style={styles.row}>
         {icon && <Image source={icon} style={styles.statusIcon} />}
         <Text style={[styles.text, completed && styles.completedText]}>
-          {todo.length > 30 ? todo.substring(0, 30) + "..." : todo}
+          {todo.length > 30 ? todo.substring(0, 29) + "..." : todo}
         </Text>
       </View>
-      <Text style={styles.time}>{time}</Text>
+      <Text style={styles.time}>{date}</Text>
+      <View style={[styles.priorityDot, { backgroundColor: priorityColor }]} />
     </View>
   );
 };
@@ -54,5 +59,12 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1
+  },
+  priorityDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginLeft: 10,
   },
 });
