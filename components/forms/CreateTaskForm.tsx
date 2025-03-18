@@ -13,13 +13,14 @@ interface CreateTaskFormProps {
 
 export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormProps) {
   const [priority, setPriority] = useState<string>("medium");
+  const [date, setDate] = useState(new Date());
 
-  const priorityColor = priorityColors[priority]; 
+  const priorityColor = priorityColors[priority];
+  const formattedDate = date.toISOString().slice(0, 16).replace("T", " ");
 
   const { control, handleSubmit, formState: { errors } } = useForm<IToDoItem>({
     defaultValues: {
       todo: "",
-      date: new Date().toLocaleTimeString("en-US", { hour: "2-digit" }),
       priority: priority,
       status: "to-do",
     },
@@ -29,7 +30,7 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
     const newTask: IToDoItem = {
       id: Date.now(),
       todo: data.todo,
-      date: data.date,
+      date: formattedDate,
       priority: data.priority,
       status: data.status,
       completed: false,
@@ -37,6 +38,14 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
     onAddTask(newTask);
     onClose();
   };
+
+  const onChangeDate = (e: any, selectedDate?: Date) => {
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
+    const formattedDate = currentDate.toISOString().slice(0, 16).replace("T", " ");
+    console.log(formattedDate);
+  };
+
 
   return (
     <View>
@@ -70,11 +79,11 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
         <View style={styles.dateContainer}>
           <View>
             <Text style={styles.field}>Date: </Text>
-            <DateTimePicker value={new Date()} mode="date" />
+            <DateTimePicker value={date} onChange={onChangeDate} mode="date" />
           </View>
           <View>
             <Text style={styles.field}>Time: </Text>
-            <DateTimePicker value={new Date()} mode="time" />
+            <DateTimePicker value={date} onChange={onChangeDate} mode="time" />
           </View>
         </View>
 
@@ -82,7 +91,6 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
           <Text style={styles.addBtnText}>Add</Text>
         </Pressable>
       </View>
-
     </View>
   );
 }

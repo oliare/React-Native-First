@@ -1,39 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Modal, Pressable, Alert } from "react-native";
-import axios from "axios";
+import { View, Text, StyleSheet, Image, Modal, Pressable } from "react-native";
 import { BottomPanel } from "../components/BottomPanel";
 import CreateTaskForm from "@/components/forms/CreateTaskForm";
 import IToDoItem from "@/interfaces/ToDoList";
 import { TodoItem } from "@/components/ToDoItem";
 import { SwipeListView } from "react-native-swipe-list-view";
-
-const api = "https://dummyjson.com/todos";
+import { init, getTasks, addTask, deleteTask, updateTask } from "@/store/db";
 
 export default function ToDoList() {
   const [tasks, setTasks] = useState<IToDoItem[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
   const _date = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
-  const _time = new Date().toLocaleTimeString("en-US", { hour: "2-digit" });
 
   useEffect(() => {
-    getTasks();
+    init();
+    loadTasks();
   }, []);
 
-  const getTasks = async () => {
-    const resp = await axios.get(`${api}`);
-    const info = resp.data.todos.map((task: IToDoItem) => ({
-      ...task,
-      date: _time,
-      priority: "low",
-      status: task.completed ? "completed" : "in progress",
-    }));
-    setTasks(info);
+  const loadTasks = async () => {
+    const resp = await getTasks();
+    setTasks(resp);
   };
 
   const addNewTask = (newTask: IToDoItem) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    addTask(newTask);
     toggleModal();
+    loadTasks();
   };
 
   const toggleModal = () => {
@@ -41,20 +34,25 @@ export default function ToDoList() {
   };
 
   const handleDelete = (id: number) => {
+    deleteTask(id);
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
-    Alert.alert("Task deleted", "The task has been deleted");
   };
 
-  const handleComplete = (rowMap: { [key: number]: any }, id: number) => {
+  const handleComplete = (rowMap: { [key: number]: any }, id: number, status: string) => {
     if (rowMap[id]) {
       rowMap[id].closeRow();
     }
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, status: task.status === "completed" ? "in progress" : "completed" } : task
-      )
-    );
+    const newStatus = status == "completed" ? "in progress" : "completed";
+    updateTask(id, newStatus);
+    loadTasks();
   };
+
+  const fixTime = (date: string) => {
+    let d = new Date(date);
+    d.setHours(d.getHours() + 2);
+    return d.toLocaleTimeString("en-US", { hour: "2-digit" });
+  };
+
 
   return (
     <View style={styles.container} >
@@ -67,7 +65,7 @@ export default function ToDoList() {
         renderItem={({ item }) => (
           <TodoItem
             todo={item.todo}
-            date={item.date}
+            date={fixTime(item.date)}
             completed={item.status == "completed"}
             id={item.id}
             priority={item.priority}
@@ -76,7 +74,7 @@ export default function ToDoList() {
         )}
         renderHiddenItem={({ item }, rowMap) => (
           <View style={styles.rowBack}>
-            <Pressable onPress={() => handleComplete(rowMap, item.id)}
+            <Pressable onPress={() => handleComplete(rowMap, item.id, item.status)}
               style={[item.status === 'completed' ? styles.undoBtn : styles.doneBtn, styles.swipe]}>
               <Image source={item.status === 'completed' ? require("../assets/images/undo.png")
                 : require("../assets/images/ok.png")}
