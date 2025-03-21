@@ -16,6 +16,9 @@ export default function Index() {
         <Link href="/todoList" style={[styles.link, styles.linkList]}>
           <Text style={styles.linkText}>TODO List 📔</Text>
         </Link>
+        <Link href="./screens/ParticipantA" style={[styles.link, {backgroundColor: "#deadad"}]}>
+          <Text style={styles.linkText}>European Protocol 🚗</Text>
+        </Link>
       </View>
     </>
   );

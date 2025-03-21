@@ -5,26 +5,34 @@ import CreateTaskForm from "@/components/forms/CreateTaskForm";
 import IToDoItem from "@/interfaces/ToDoList";
 import { TodoItem } from "@/components/ToDoItem";
 import { SwipeListView } from "react-native-swipe-list-view";
-import { init, getTasks, addTask, deleteTask, updateTask } from "@/store/db";
+import { getTasks, addTask, deleteTask, updateTask } from "@/services/tasksService";
+import * as SQLite from 'expo-sqlite'
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import migrations from '../drizzle/migrations';
+
+const expo = SQLite.openDatabaseSync("db.db");
+const db = drizzle(expo);
 
 export default function ToDoList() {
+  const { success } = useMigrations(db, migrations);
   const [tasks, setTasks] = useState<IToDoItem[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
   const _date = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 
   useEffect(() => {
-    init();
+    if (!success) return;
     loadTasks();
-  }, []);
+  }, [success]);
 
   const loadTasks = async () => {
     const resp = await getTasks();
     setTasks(resp);
   };
 
-  const addNewTask = (newTask: IToDoItem) => {
-    addTask(newTask);
+  const addNewTask = async (newTask: IToDoItem) => {
+    await addTask(newTask);
     toggleModal();
     loadTasks();
   };
@@ -33,17 +41,17 @@ export default function ToDoList() {
     setModalVisible(!modalVisible);
   };
 
-  const handleDelete = (id: number) => {
-    deleteTask(id);
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  const handleDelete = async (id: number) => {
+    await deleteTask(id);
+    loadTasks();
   };
 
-  const handleComplete = (rowMap: { [key: number]: any }, id: number, status: string) => {
+  const handleComplete = async (rowMap: { [key: number]: any }, id: number, status: string) => {
     if (rowMap[id]) {
       rowMap[id].closeRow();
     }
     const newStatus = status == "completed" ? "in progress" : "completed";
-    updateTask(id, newStatus);
+    await  updateTask(id, newStatus);
     loadTasks();
   };
 
