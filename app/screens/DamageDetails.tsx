@@ -80,8 +80,8 @@ export default function DamageDetails() {
 
             <Pressable onPress={handleSubmit(validateAndSubmit)}>
                 <View style={styles.containerButton}>
-                    <Link href={'/'}>
-                        <Text style={styles.addBtn}>Finish and Save</Text>
+                    <Link style={styles.addBtn} href={'/'}>
+                        <Text>Finish and Save</Text>
                     </Link>
                 </View>
             </Pressable>
