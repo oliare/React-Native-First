@@ -1,7 +1,12 @@
+import { useSelector } from 'react-redux';
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { RootState } from '@/redux/store';
 
 export default function Layout() {
+    const notifications = useSelector((state: RootState) =>
+        state.todo.tasks.filter(task => task.status != 'completed').length);
+
     return (
         <Tabs screenOptions={{ headerShown: false }}>
             <Tabs.Screen name="index"
@@ -17,6 +22,7 @@ export default function Layout() {
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="list-outline" size={size} color={color} />
                     ),
+                    tabBarBadge: notifications == 0 ? undefined : notifications
                 }} />
             <Tabs.Screen name="gallery"
                 options={{

@@ -5,11 +5,17 @@ import IToDoItem from "@/interfaces/ToDoList";
 import { TodoItem } from "@/components/ToDoItem";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { getTasks, addTask, deleteTask, updateTask } from "@/services/tasksService";
+import { useDispatch, useSelector } from "react-redux";
+import { setItems, updateItem, deleteItem } from '../../redux/slices/todoSlice';
+import { RootState } from "@/redux/store";
 
 
 export default function ToDoList() {
-  const [tasks, setTasks] = useState<IToDoItem[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const dispatch = useDispatch();
+  
+  const tasks = useSelector((state: RootState) => state.todo.tasks);
+  const tasksCount = useSelector((state: RootState) => state.todo.tasks.filter(task => task.status != 'completed').length);
 
   const _date = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 
@@ -19,7 +25,7 @@ export default function ToDoList() {
 
   const loadTasks = async () => {
     const resp = await getTasks();
-    setTasks(resp);
+    dispatch(setItems(resp));
   };
 
   const addNewTask = async (newTask: IToDoItem) => {
@@ -34,6 +40,7 @@ export default function ToDoList() {
 
   const handleDelete = async (id: number) => {
     await deleteTask(id);
+    dispatch(deleteItem(id));
     loadTasks();
   };
 
@@ -43,6 +50,7 @@ export default function ToDoList() {
     }
     const newStatus = status == "completed" ? "in progress" : "completed";
     await updateTask(id, newStatus);
+    dispatch(updateItem({ id, status: newStatus }));
     loadTasks();
   };
 
@@ -173,7 +181,7 @@ const styles = StyleSheet.create({
   },
   trashBtn: {
     backgroundColor: "rgba(243, 216, 216, 0.48)",
-    marginRight: 25,
+    marginRight: 5,
     borderColor: 'rgb(220, 176, 176)',
   },
   trashImg: {

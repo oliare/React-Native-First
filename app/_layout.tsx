@@ -1,8 +1,10 @@
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { db } from '@/services/db'; 
+import { db } from '@/services/db';
 import migrations from '@/drizzle/migrations';
 import { View, Text } from "react-native";
 import { Stack } from "expo-router";
+import { Provider } from "react-redux";
+import { store } from "@/redux/store";
 
 export default function RootLayout() {
   const { success, error } = useMigrations(db, migrations);
@@ -22,6 +24,10 @@ export default function RootLayout() {
       </View>
     );
   }
-  
-  return <Stack />;
+
+  return (
+    <Provider store={store}>
+      <Stack />
+    </Provider>
+  )
 }
