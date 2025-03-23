@@ -1,8 +1,9 @@
 import { useFonts } from "expo-font";
-import { Link } from "expo-router";
-import { Text, StyleSheet, Image, ScrollView } from "react-native";
+import { Link, useRouter } from "expo-router";
+import { Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
 
 export default function Index() {
+  const router = useRouter();
 
   useFonts({
     "SpaceMono": require("../assets/fonts/SpaceMono-Bold.ttf"),
@@ -10,6 +11,10 @@ export default function Index() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <TouchableOpacity onPress={() => router.push('/')} style={styles.backBtn}>
+        <Text style={{ fontSize: 16 }}>🔙</Text>
+      </TouchableOpacity>
+
       <Text style={styles.title}>Claude Monet</Text>
       <Text style={styles.subTitle}>- the father of impressionism</Text>
 
@@ -44,6 +49,14 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#eeeeee",
     padding: 20,
+    paddingTop: 10,
+  },
+  backBtn: {
+    backgroundColor: "#dbdbdb",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    width: 50,
   },
   title: {
     fontFamily: "SpaceMono",

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, Modal, Pressable } from "react-native";
-import { BottomPanel } from "../components/BottomPanel";
 import CreateTaskForm from "@/components/forms/CreateTaskForm";
 import IToDoItem from "@/interfaces/ToDoList";
 import { TodoItem } from "@/components/ToDoItem";
@@ -9,7 +8,7 @@ import { getTasks, addTask, deleteTask, updateTask } from "@/services/tasksServi
 import * as SQLite from 'expo-sqlite'
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
-import migrations from '../drizzle/migrations';
+import migrations from '../../drizzle/migrations';
 
 const expo = SQLite.openDatabaseSync("db.db");
 const db = drizzle(expo);
@@ -51,7 +50,7 @@ export default function ToDoList() {
       rowMap[id].closeRow();
     }
     const newStatus = status == "completed" ? "in progress" : "completed";
-    await  updateTask(id, newStatus);
+    await updateTask(id, newStatus);
     loadTasks();
   };
 
@@ -67,7 +66,7 @@ export default function ToDoList() {
       <Text style={styles.title}>ODOT List</Text>
       <Text style={styles.date}>{_date}</Text>
 
-      <SwipeListView
+      <SwipeListView style={styles.listView}
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
@@ -84,14 +83,14 @@ export default function ToDoList() {
           <View style={styles.rowBack}>
             <Pressable onPress={() => handleComplete(rowMap, item.id, item.status)}
               style={[item.status === 'completed' ? styles.undoBtn : styles.doneBtn, styles.swipe]}>
-              <Image source={item.status === 'completed' ? require("../assets/images/undo.png")
-                : require("../assets/images/ok.png")}
+              <Image source={item.status === 'completed' ? require("../../assets/images/undo.png")
+                : require("../../assets/images/ok.png")}
                 style={item.status === 'completed' ? styles.undoImg : styles.doneImg} />
             </Pressable>
 
             <Pressable style={[styles.trashBtn, styles.swipe]} onPress={() => handleDelete(item.id)}>
               <View style={styles.trashView}>
-                <Image style={styles.trashImg} source={require("../assets/images/trash.png")} />
+                <Image style={styles.trashImg} source={require("../../assets/images/trash.png")} />
               </View>
             </Pressable>
           </View>
@@ -105,7 +104,7 @@ export default function ToDoList() {
       <Pressable onPress={toggleModal}>
         <View style={styles.containerButton}>
           <View style={styles.addBtnBg}>
-            <Image style={styles.addBtn} source={require("../assets/images/plus.png")} />
+            <Image style={styles.addBtn} source={require("../../assets/images/plus.png")} />
           </View>
         </View>
       </Pressable>
@@ -116,7 +115,6 @@ export default function ToDoList() {
         </View>
       </Modal>
 
-      <BottomPanel />
     </View>
   );
 }
@@ -124,13 +122,14 @@ export default function ToDoList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    marginBottom: 50,
   },
   title: {
     fontSize: 26,
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 13,
+    paddingTop: 10
   },
   date: {
     fontSize: 16,
@@ -138,13 +137,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontWeight: "bold",
   },
+  listView: {
+    padding: 20,
+  },
   containerButton: {
     flex: 1,
     alignSelf: "center",
     alignContent: "center",
     justifyContent: "center",
-    backgroundColor: "black",
-    marginTop: 10,
+    marginVertical: 10,
   },
   addBtnBg: {
     backgroundColor: "white",
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 50,
-    marginTop: 40
+    marginTop: 50,
   },
   addBtn: {
     width: 60,
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
   },
   trashBtn: {
     backgroundColor: "rgba(243, 216, 216, 0.48)",
-    marginRight: 5,
+    marginRight: 25,
     borderColor: 'rgb(220, 176, 176)',
   },
   trashImg: {

@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import React from "react";
-import { Text, StyleSheet, View, Dimensions, Platform } from "react-native";
+import { Text, StyleSheet, View, Dimensions } from "react-native";
 
 export default function Index() {
 
@@ -25,7 +25,7 @@ export default function Index() {
 }
 
 const width = Dimensions.get("screen").width
-const height = Dimensions.get("window").height
+// const height = Dimensions.get("window").height
 
 const styles = StyleSheet.create({
   container: {

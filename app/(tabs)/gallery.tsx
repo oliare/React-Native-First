@@ -1,5 +1,4 @@
-import { Link } from "expo-router";
-import { Text, ScrollView, StyleSheet, Image, ImageBackground, SectionList, View } from "react-native";
+import { Text, ScrollView, StyleSheet, Image, ImageBackground, View } from "react-native";
 
 import { useFonts } from "expo-font";
 
@@ -7,7 +6,7 @@ import { useFonts } from "expo-font";
 export default function Index() {
 
   useFonts({
-    "SpaceMono": require("../assets/fonts/SpaceMono-Bold.ttf"),
+    "SpaceMono": require("../../assets/fonts/SpaceMono-Bold.ttf"),
   });
 
   const artworks = [
@@ -26,9 +25,8 @@ export default function Index() {
   ];
 
   return (
-    <ImageBackground source={require("../assets/images/claude.jpg")} style={styles.background}>
+    <ImageBackground source={require("../../assets/images/claude.jpg")} style={styles.background}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Link href="/" style={styles.backLink}>🔙</Link>
         <Text style={styles.title}>* Artworks by Claude Monet *</Text>
         <ScrollView contentContainerStyle={styles.gallery}>
           {artworks.map((item, index) => (
@@ -49,15 +47,9 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingVertical: 20,
+    paddingTop: 10,
     flex: 1,
     backgroundColor: "rgba(186, 186, 186, 0.6)",
-  },
-  backLink: {
-    paddingLeft: 20,
-    paddingBottom: 10,
-    fontSize: 24,
-    color: "#fff",
-    alignSelf: "flex-start",
   },
   title: {
     fontSize: 18,
@@ -66,6 +58,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     padding: 10,
     marginBottom: 10,
+    marginTop: 10,
     borderRadius: 10,
     backgroundColor: "rgba(109, 66, 4, 0.28)",
   },
@@ -84,7 +77,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 10,
-    boxShadow:'1 0 8 rgba(50, 2, 2, 0.52)'
+    boxShadow: '1 0 8 rgba(50, 2, 2, 0.52)'
   },
   caption: {
     fontSize: 10,
