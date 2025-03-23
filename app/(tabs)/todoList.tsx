@@ -5,25 +5,17 @@ import IToDoItem from "@/interfaces/ToDoList";
 import { TodoItem } from "@/components/ToDoItem";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { getTasks, addTask, deleteTask, updateTask } from "@/services/tasksService";
-import * as SQLite from 'expo-sqlite'
-import { drizzle } from 'drizzle-orm/expo-sqlite';
-import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
-import migrations from '../../drizzle/migrations';
 
-const expo = SQLite.openDatabaseSync("db.db");
-const db = drizzle(expo);
 
 export default function ToDoList() {
-  const { success } = useMigrations(db, migrations);
   const [tasks, setTasks] = useState<IToDoItem[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
   const _date = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 
   useEffect(() => {
-    if (!success) return;
     loadTasks();
-  }, [success]);
+  }, []);
 
   const loadTasks = async () => {
     const resp = await getTasks();
