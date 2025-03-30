@@ -1,44 +1,49 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Modal, Pressable } from "react-native";
+import { View, Text, StyleSheet, Image, Modal, Pressable, Alert } from "react-native";
 import CreateTaskForm from "@/components/forms/CreateTaskForm";
 import IToDoItem from "@/interfaces/ToDoList";
 import { TodoItem } from "@/components/ToDoItem";
 import { SwipeListView } from "react-native-swipe-list-view";
-import { getTasks, addTask, deleteTask, updateTask } from "@/services/tasksService";
+import { getTasks, addTask, deleteTask, updateTask, getTask } from "@/services/tasksService";
 import { useDispatch, useSelector } from "react-redux";
-import { setItems, updateItem, deleteItem } from '../../redux/slices/todoSlice';
+import { setItems, updateItem, deleteItem, addItem } from '../../redux/slices/todoSlice';
 import { RootState } from "@/redux/store";
-
 
 export default function ToDoList() {
   const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
-  
   const tasks = useSelector((state: RootState) => state.todo.tasks);
   const tasksCount = useSelector((state: RootState) => state.todo.tasks.filter(task => task.status != 'completed').length);
-
+  
   const _date = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 
   useEffect(() => {
     loadTasks();
   }, []);
-
+  
   const loadTasks = async () => {
     const resp = await getTasks();
     dispatch(setItems(resp));
   };
-
+  
   const addNewTask = async (newTask: IToDoItem) => {
-    await addTask(newTask);
-    toggleModal();
-    loadTasks();
+    try {
+      await addTask(newTask);
+      console.log("Task after adding: ", newTask);
+      dispatch(addItem(newTask));
+      toggleModal();
+      loadTasks();
+    }
+    catch (error) {
+      console.error("Error adding task: ", error);
+    }
   };
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number, notificationId: string) => {
     await deleteTask(id);
     dispatch(deleteItem(id));
     loadTasks();
@@ -56,7 +61,6 @@ export default function ToDoList() {
 
   const fixTime = (date: string) => {
     let d = new Date(date);
-    d.setHours(d.getHours() + 2);
     return d.toLocaleTimeString("en-US", { hour: "2-digit" });
   };
 
@@ -73,10 +77,12 @@ export default function ToDoList() {
           <TodoItem
             todo={item.todo}
             date={fixTime(item.date)}
+            deadline={fixTime(item.date)}
             completed={item.status == "completed"}
             id={item.id}
             priority={item.priority}
             status={item.status}
+            notificationId={item.notificationId}
           />
         )}
         renderHiddenItem={({ item }, rowMap) => (
@@ -88,7 +94,7 @@ export default function ToDoList() {
                 style={item.status === 'completed' ? styles.undoImg : styles.doneImg} />
             </Pressable>
 
-            <Pressable style={[styles.trashBtn, styles.swipe]} onPress={() => handleDelete(item.id)}>
+            <Pressable style={[styles.trashBtn, styles.swipe]} onPress={() => handleDelete(item.id, item.notificationId ?? '')}>
               <View style={styles.trashView}>
                 <Image style={styles.trashImg} source={require("../../assets/images/trash.png")} />
               </View>

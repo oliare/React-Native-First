@@ -6,7 +6,9 @@ export const tasksTable = sqliteTable("tasks", {
     date: text("date").notNull(),
     priority: text("priority").notNull(),
     status: text("status").notNull(),
-    completed: integer("completed", { mode: "boolean" }).notNull()
+    completed: integer("completed", { mode: "boolean" }).notNull(),
+    deadline: text("deadline"),
+    notificationId: text("notification_id"),
 });
 
 export type IToDoItem = typeof tasksTable.$inferSelect;

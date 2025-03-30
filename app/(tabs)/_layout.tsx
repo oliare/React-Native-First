@@ -2,8 +2,10 @@ import { useSelector } from 'react-redux';
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { RootState } from '@/redux/store';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export default function Layout() {
+    useNotifications()
     const notifications = useSelector((state: RootState) =>
         state.todo.tasks.filter(task => task.status != 'completed').length);
 

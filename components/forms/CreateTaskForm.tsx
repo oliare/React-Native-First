@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import IToDoItem from "@/interfaces/ToDoList";
 import { priorityColors } from "../../constants";
+import { scheduleNotification } from "@/hooks/useNotifications";
 
 interface CreateTaskFormProps {
   onAddTask: (newTask: IToDoItem) => void;
@@ -13,10 +14,20 @@ interface CreateTaskFormProps {
 
 export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormProps) {
   const [priority, setPriority] = useState<string>("medium");
-  const [date, setDate] = useState(new Date());
+  const [date] = useState(new Date());
+  const [deadline, setDeadline] = useState(new Date());
+
+  const formatDate = (d: Date) => {
+    const localDate = new Date(d);
+    localDate.setHours(localDate.getHours());
+
+    const datePart = localDate.toISOString().split('T')[0];
+    const timePart = localDate.toTimeString().split(' ')[0];
+
+    return `${datePart} ${timePart}`;
+  };
 
   const priorityColor = priorityColors[priority];
-  const formattedDate = date.toISOString().slice(0, 16).replace("T", " ");
 
   const { control, handleSubmit, formState: { errors } } = useForm<IToDoItem>({
     defaultValues: {
@@ -26,26 +37,32 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
     },
   });
 
-  const onSubmit = (data: IToDoItem) => {
+  const onSubmit = async (data: IToDoItem) => {
+    if (new Date(deadline) <= new Date()) {
+      Alert.alert("Error", "Deadline must be in the future and greater than 0 min");
+      return;
+    }
+
+    const notificationId = await scheduleNotification(data) ?? null;
+
     const newTask: IToDoItem = {
       id: Date.now(),
       todo: data.todo,
-      date: formattedDate,
+      date: formatDate(date),
+      deadline: formatDate(deadline),
       priority: data.priority,
       status: data.status,
       completed: false,
+      notificationId: notificationId,
     };
+    console.log(newTask)
     onAddTask(newTask);
     onClose();
   };
 
-  const onChangeDate = (e: any, selectedDate?: Date) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
-    const formattedDate = currentDate.toISOString().slice(0, 16).replace("T", " ");
-    console.log(formattedDate);
+  const onChangeDeadline = (event: any, selectedDate?: Date) => {
+    if (selectedDate) setDeadline(selectedDate);
   };
-
 
   return (
     <View>
@@ -78,12 +95,12 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
 
         <View style={styles.dateContainer}>
           <View>
-            <Text style={styles.field}>Date: </Text>
-            <DateTimePicker value={date} onChange={onChangeDate} mode="date" />
+            <Text style={styles.field}>Deadline: </Text>
+            <DateTimePicker value={deadline} onChange={onChangeDeadline} mode="date" />
           </View>
           <View>
-            <Text style={styles.field}>Time: </Text>
-            <DateTimePicker value={date} onChange={onChangeDate} mode="time" />
+            <Text style={styles.field}>Deadline: </Text>
+            <DateTimePicker value={deadline} onChange={onChangeDeadline} mode="time" />
           </View>
         </View>
 
