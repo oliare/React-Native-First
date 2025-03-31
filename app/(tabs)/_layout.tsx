@@ -33,6 +33,13 @@ export default function Layout() {
                         <Ionicons name="color-palette-outline" size={size} color={color} />
                     ),
                 }} />
+            <Tabs.Screen name="animation"
+                options={{
+                    title: "Animation",
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="logo-ionic" size={size} color={color} />
+                    ),
+                }} />
         </Tabs>
     );
 }
