@@ -40,6 +40,13 @@ export default function Layout() {
                         <Ionicons name="logo-ionic" size={size} color={color} />
                     ),
                 }} />
+            <Tabs.Screen name="gesture"
+                options={{
+                    title: "Gestures",
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="hand-left-outline" size={size} color={color} />
+                    ),
+                }} />
         </Tabs>
     );
 }
