@@ -55,7 +55,7 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
       completed: false,
       notificationId: notificationId,
     };
-    console.log(newTask)
+    // console.log(newTask)
     onAddTask(newTask);
     onClose();
   };
@@ -66,7 +66,7 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
 
   return (
     <View>
-      <Pressable onPress={onClose} style={styles.closeBtn}>
+      <Pressable testID="close-button" onPress={onClose} style={styles.closeBtn}>
         <Image source={require("../../assets/images/close.png")} style={styles.closeImg} />
       </Pressable>
       <View style={styles.container}>
@@ -75,18 +75,18 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
         <Text style={styles.field}>Task: <Text style={{ color: '#ba3838' }}>*</Text></Text>
         <Controller control={control} name="todo" rules={{ required: 'Task is required' }}
           render={({ field: { onChange, value } }) => (
-            <TextInput style={styles.input} onChangeText={onChange} value={value} />
+            <TextInput testID="task-input" style={styles.input} onChangeText={onChange} value={value} />
           )} />
         {errors.todo && <Text style={styles.errorText}>{errors.todo.message}</Text>}
 
         <View style={styles.priorityRow}>
           <Text style={[styles.field, { marginTop: 20 }]}>Priority:</Text>
-          <View style={[styles.priorityDot, { backgroundColor: priorityColor }]} />
+          <View style={[styles.priorityDot, { backgroundColor: priorityColor }]} testID="priority-dot" />
         </View>
 
         <Controller control={control} name="priority"
           render={({ field: { onChange, value } }) => (
-            <Picker selectedValue={value} onValueChange={(item) => { onChange(item); setPriority(item); }} itemStyle={styles.pickerItem}>
+            <Picker testID="priority-picker" selectedValue={value} onValueChange={(item) => { onChange(item); setPriority(item); }} itemStyle={styles.pickerItem}>
               <Picker.Item label="Low" value="low" />
               <Picker.Item label="Medium" value="medium" />
               <Picker.Item label="High" value="high" />
@@ -96,11 +96,11 @@ export default function CreateTaskForm({ onAddTask, onClose }: CreateTaskFormPro
         <View style={styles.dateContainer}>
           <View>
             <Text style={styles.field}>Deadline: </Text>
-            <DateTimePicker value={deadline} onChange={onChangeDeadline} mode="date" />
+            <DateTimePicker testID="date-picker" value={deadline} onChange={onChangeDeadline} mode="date" />
           </View>
           <View>
             <Text style={styles.field}>Deadline: </Text>
-            <DateTimePicker value={deadline} onChange={onChangeDeadline} mode="time" />
+            <DateTimePicker testID="time-picker" value={deadline} onChange={onChangeDeadline} mode="time" />
           </View>
         </View>
 
